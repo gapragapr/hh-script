@@ -1,2 +1,4 @@
 profile/
 node_modules/
+
+cron.log

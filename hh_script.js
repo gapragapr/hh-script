@@ -2,7 +2,7 @@ import puppeteer from "puppeteer";
 
 (async () => {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         userDataDir: '/home/gapragapr/projects/puppeteer/1/profile',
         channel: 'chrome',
         args: [`--window-size=1440,1200`],
@@ -18,6 +18,8 @@ import puppeteer from "puppeteer";
     await page.goto('https://hh.ru/', {
         waitUntil: 'domcontentloaded'
     })
+
+    console.log('Скрипт запущен ' + new Date())
 
     const searchInput = await page.$('[data-qa=search-input]')
 
@@ -49,8 +51,26 @@ import puppeteer from "puppeteer";
     const excludedInput = await page.$('[data-qa=novafilters-excluded-text-input]')
 
     if (excludedInput) {
-        excludedInput.type('Native, native, C#, C++, Senior, senior, php, PHP, Php')
-        excludedInput.press('Enter')
+        await excludedInput.type('Native, native, C#, C++, Senior, senior, php, PHP, Php')
+        await excludedInput.press('Enter')
+    }
+
+    await page.waitForNavigation({
+      waitUntil: 'domcontentloaded'
+    })
+
+    const compensationInput = await page.$("[data-qa=novafilters-custom-compensation]")
+
+    if (compensationInput) {
+        await compensationInput.click()
+        await compensationInput.type('75000')
+        await compensationInput.press('Enter')
+    }
+
+    const salaryCheckbox = await page.$('[data-qa=serp__novafilter-only_with_salary]')
+
+    if (salaryCheckbox) {
+      await salaryCheckbox.click()
     }
 
     await page.waitForNavigation({
@@ -65,7 +85,7 @@ import puppeteer from "puppeteer";
         jobs.forEach(job => {
             setTimeout(() => {
                 job.click()
-            }, 100)
+            }, 500)
             clearTimeout()
         })
     })
@@ -74,6 +94,8 @@ import puppeteer from "puppeteer";
         timeout: 60 * 1000,
         waitUntil: 'domcontentloaded'
     })
+
+    console.log('Скрипт выполнен ' + new Date())
 
     await browser.close()
 })();
